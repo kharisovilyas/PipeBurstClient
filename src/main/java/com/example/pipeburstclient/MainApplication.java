@@ -1,21 +1,22 @@
 package com.example.pipeburstclient;
 
 
-
+import com.example.pipeburstclient.engine.model.Pipe;
+import com.example.pipeburstclient.engine.model.Point;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainApplication extends Application {
 
@@ -29,9 +30,44 @@ public class MainApplication extends Application {
         stage.show();*/
 
 
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("sample.fxml"));
-        primaryStage.setTitle("JavaFX Chart (Series)");
+        //FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("sample.fxml"));
+        primaryStage.setTitle("Pipe Burst Visualisation");
+        ParameterInputDialog dialog = new ParameterInputDialog();
+        dialog.showAndWait();
 
+        if (dialog.getResult() == ButtonType.OK) {
+            double length = dialog.getLength();
+            double diameter = dialog.getDiameter();
+            int horizontalQuantity = dialog.getHorizontalQuantity();
+            int verticalQuantity = dialog.getVerticalQuantity();
+            Point generationSyntacticData = new Point(
+                    1.5,
+                    0,
+                    500_000,
+                    90,
+                    1000,
+                    false
+            );
+
+            List<Point> listPoints = new ArrayList<>();
+            for (int i = 0; i < verticalQuantity; i++) {
+                listPoints.add(generationSyntacticData);
+            }
+            Pipe pipe = new Pipe(
+                    length,
+                    diameter,
+                    horizontalQuantity,
+                    verticalQuantity,
+                    listPoints
+            );
+            pipe.calculatePoints(listPoints);
+            charting(primaryStage, pipe);
+        }
+
+
+    }
+
+    private void charting(Stage primaryStage, Pipe pipe) {
         NumberAxis x = new NumberAxis();
         NumberAxis y = new NumberAxis();
 
@@ -39,9 +75,12 @@ public class MainApplication extends Application {
         //LineChart<Number, Number> numberLineChart = new LineChart<Number,Number>(x, y);
         numberScatterChart.setTitle("Series");
 
-        XYChart.Series series1 = new XYChart.Series();
-        XYChart.Series series2 = new XYChart.Series();
+        XYChart.Series<Number, Number> series1 = new XYChart.Series();
+        XYChart.Series<Number, Number> series2 = new XYChart.Series();
         //XYChart.Series series3 = new XYChart.Series();
+
+
+        Scene scene = new Scene(numberScatterChart, 600, 600);
 
         series1.setName("Флюид");
         series2.setName("Стенка Трубопровода");
@@ -50,34 +89,54 @@ public class MainApplication extends Application {
         ObservableList<XYChart.Data> datas2 = FXCollections.observableArrayList();
         //ObservableList<XYChart.Data> datas3 = FXCollections.observableArrayList();
 
-        double d = 15;
-        double l = 200;
-        double verticalQuantity = 10 + 1;
-        double horizontalQuantity = 20;
+        double d = pipe.getDiameter();
+        double l = pipe.getLength();
+        double verticalQuantity = pipe.getVerticalQuantity()+1;
+        double horizontalQuantity = pipe.getHorizontalQuantity();
         double dd = d / verticalQuantity;
         double dl = l / horizontalQuantity;
         for (int i = 0; i <= verticalQuantity; i++) {
             for (int j = 0; j < horizontalQuantity; j++) {
-                if (i == 0) {
-                    datas2.add(new XYChart.Data(j * dl, 0));
-                } else if (i == verticalQuantity) {
-                    datas2.add(new XYChart.Data(j * dl, 1 * d));
-                } else {
-                    datas.add(new XYChart.Data(j * dl, i * dd));
+                XYChart.Data symbol = new XYChart.Data(j*dl,i*dd);
+
+                if (i == 0||i == verticalQuantity) {
+                    //pipe.getPoints().get(i).get(j).density
+                    series2.getData().add(new XYChart.Data<>(j*dl,i*dd));
+                    // series2.setNode(new CustomDataNode(getColorBasedOnValue(pipe.getPoints().get(i).get(j).density)));
+                }
+                else {
+                    series1.getData().add(new XYChart.Data<>(j*dl,i*dd));
                 }
             }
 
         }
 
-        series1.setData(datas);
-        series2.setData(datas2);
+        for (int i = 0; i <= verticalQuantity; i++) {
+            for (int j = 0; j < horizontalQuantity; j++) {
+
+            }
+        }
+
+        for (XYChart.Data<Number, Number> dataPoint : series1.getData()) {
+            double xValue = dataPoint.getXValue().doubleValue();
+            double yValue = dataPoint.getYValue().doubleValue();
+            pipe.Properties_with_Burst(75);
+            double density1 = pipe.getPoints().get((int) ((int) yValue/dd)).get((int) ((int) xValue/dl)).density;
+
+            Color pointColor = getColorBasedOnValue(density1); // Change this based on your criteria
+            dataPoint.setNode(new CustomDataNode(pointColor));
+
+
+
+        }
+
         //series3.setData(datas3);
 
         //vBox.getChildren().add(numberScatterChart);
         //vBox.getChildren().add(numberScatterChart);
 
 
-        Scene scene = new Scene(numberScatterChart, 600, 600);
+
 
         scene.getOnScrollStarted();
 
@@ -99,89 +158,39 @@ public class MainApplication extends Application {
                 d1.getNode().setOnMouseExited(event -> d1.getNode().getStyleClass().remove("onHover"));
             }
         }
+
+
+
         primaryStage.setScene(scene);
 
         primaryStage.show();
 
+
     }
-        public static void main(String[] args) {
-            launch(args);
+
+    private Color getColorBasedOnValue(double density) {
+        // Implement your logic to determine color based on the value
+        // For example, you can use gradients, thresholds, or custom mappings
+        // Here, we'll simply use a gradient from blue to red based on value
+        if (density<=1000 && density > 950){
+            return Color.rgb(255,0,0);
+        }
+        else if (density<=950 && density>900){
+            return Color.rgb(255,102,0);
+        }
+        else {
+            return Color.rgb(0,0,255);
         }
     }
-//Tooltip tooltip1 = new Tooltip("12312312");
-//tooltip1.install();
-        /*ObservableList<XYChart.Data> dataList = ((XYChart.Series) numberScatterChart.getData().get(0)).getData();
-        dataList.forEach(data->{
-            Node node = data.getNode();
-            Tooltip tooltip = new Tooltip('('+data.getXValue().toString()+';'+data.getYValue().toString()+')');
-            tooltip.install(node, tooltip);
-        });
 
-
-/*
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Tooltip;
-import javafx.stage.Stage;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-public class ToolTipOnLineChart extends Application {
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public void start(Stage stage) throws ParseException {
-        stage.setTitle("Line Chart Sample");
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Date");
-        yAxis.setLabel("Events");
-
-        final LineChart<Number,Number> lineChart = new LineChart<Number,Number>(xAxis, yAxis);
-        lineChart.setTitle("Events");
-
-
-
-
-        XYChart.Series<Number,Number> series = new XYChart.Series<>();
-        series.setName("Events this Year");
-        series.getData().add(new XYChart.Data(13, 23));
-        series.getData().add(new XYChart.Data(15, 14));
-        series.getData().add(new XYChart.Data(19, 15));
-        series.getData().add(new XYChart.Data(128, 24));
-        series.getData().add(new XYChart.Data(13, 34));
-        series.getData().add(new XYChart.Data(16, 36));
-        series.getData().add(new XYChart.Data(17, 22));
-        series.getData().add(new XYChart.Data(12, 45));
-        series.getData().add(new XYChart.Data(11, 43));
-        series.getData().add(new XYChart.Data(12, 17));
-        series.getData().add(new XYChart.Data(134, 29));
-        series.getData().add(new XYChart.Data(138, 25));
-
-
-        Scene scene  = new Scene(lineChart,800,600);
-        //scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
-        lineChart.getData().add(series);
-        for (XYChart.Series<Number, Number> s : lineChart.getData()) {
-            for (XYChart.Data<Number, Number> d : s.getData()) {
-                Tooltip.install(d.getNode(), new Tooltip(
-                        d.getXValue().toString() + "\n" +
-                                "Number Of Events : " + d.getYValue()));
-
-                //Adding class on hover
-
-            }
+    private class CustomDataNode extends javafx.scene.shape.Circle {
+        public CustomDataNode(Color color) {
+            setRadius(5);
+            setFill(color);
+            setStroke(Color.BLACK);
         }
-        stage.setScene(scene);
-        stage.show();
-
-        /**
-         * Browsing through the Data and applying ToolTip
-         * as well as the class on hover
-         */
-
+    }
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

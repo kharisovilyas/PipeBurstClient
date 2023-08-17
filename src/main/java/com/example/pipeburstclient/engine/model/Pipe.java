@@ -15,14 +15,14 @@ public class Pipe {
 
     private List<List<Point>> points;
 
-    public Pipe(double length, double diameter, int horizontalQuantity, int verticalQuantity) {
+    public Pipe(double length, double diameter, int horizontalQuantity, int verticalQuantity, List<Point> startVerticalPoints) {
         this.length = length;
         this.diameter = diameter;
         this.horizontalQuantity = horizontalQuantity;
         this.verticalQuantity = verticalQuantity;
         this.deltaDiameter = diameter / (verticalQuantity - 1);
         this.deltaLength = length / (horizontalQuantity - 1);
-        initializePoints();
+        this.points = calculatePoints(startVerticalPoints);
     }
 
     public List<List<Point>> getPoints() {
@@ -45,7 +45,32 @@ public class Pipe {
         }
     }
 
-    public void calculatePoints(List<Point> startVerticalPoints) {
+    public double getLength() {
+        return length;
+    }
+
+    public double getDiameter() {
+        return diameter;
+    }
+
+    public int getHorizontalQuantity() {
+        return horizontalQuantity;
+    }
+
+    public int getVerticalQuantity() {
+        return verticalQuantity;
+    }
+
+    public double getDeltaDiameter() {
+        return deltaDiameter;
+    }
+
+    public double getDeltaLength() {
+        return deltaLength;
+    }
+
+    public List<List<Point>> calculatePoints(List<Point> startVerticalPoints){
+        initializePoints();
         Point verticalMainPoint = startVerticalPoints.get(verticalQuantity / 2);
         Calculation calc = new Calculation();
         for (int i = 0; i < verticalQuantity; i++) {
@@ -65,65 +90,58 @@ public class Pipe {
                 //для потока во втором столбце считается верно, выводит ХУЙНЮ
                 double flow = calc.calcFlow(velocity, density);
                 Point updatedPoint = new Point(
-                                velocity,
-                                flow,
-                                pressure,
-                                temperature,
-                                density,
-                                isBorderPoint
-                        );
+                        velocity,
+                        flow,
+                        pressure,
+                        temperature,
+                        density,
+                        isBorderPoint
+                );
                 points.get(i).set(j, updatedPoint);
             }
         }
+        return points;
     }
 
-
-    public void outMatrix() {
-        for (int i = 0; i < verticalQuantity; i++) {
-            for (int j = 0; j < horizontalQuantity; j++) {
-                System.out.print(points.get(i).get(j).velocity + " ");
-            }
-            System.out.println(); // Переход на новую строку для следующей строки матрицы
-        }
-    }
-
-    public void Destiny_with_Burst(double length_b) {
+    public void Properties_with_Burst(double length_b) {
+        Calculation calc = new Calculation();
         double density0 = points.get(0).get(0).density;
         double density1 = density0 * 0.6;
         double density_step = 0;
+        double velocity0 = points.get(verticalQuantity/2).get(0).velocity;
+        double velocity1 = velocity0 * 0.6;
+        double velocity_step = 0;
         for (int i = 0; i < verticalQuantity; i++) {
-            for (int j = 0; j < horizontalQuantity; j++) {
-                points.get(i).get(j).density = density0;
-            }
-            for (i = 0; i < verticalQuantity; i++) {
-                for (int j = 1; j < horizontalQuantity; j++) {
-                    double x = j * deltaLength;
-                    double y = i * deltaDiameter;
-                    //double density0 = 10;
+            for (int j = 1; j < horizontalQuantity; j++) {
+                double x = j * deltaLength;
+                double y = i * deltaDiameter;
+                Point prevPoint = points.get(i).get(j - 1);
+                //double density0 = 10;
 
-                    if ((x < -0.5 * Math.pow(y - diameter, 2) + length_b)) {
-                        //установить поинту начальную плотность
-                        points.get(i).get(j).density = density0;
-                    } else {
-                        if (points.get(i).get(j - 1).density == density0) {
-                            double point_c = /*(int)*/ (length_b / deltaLength - j/2);
-                            density_step = (density0 - density1) / point_c;
-                        }
-                        points.get(i).get(j).density = points.get(i).get(j - 1).density - density_step;
+                if ((x < -0.5 * Math.pow(y - diameter, 2) + length_b)) {
+                    //установить поинту начальную плотность
+                    points.get(i).get(j).density = density0;
+                } else {
+                    if (points.get(i).get(j - 1).density == density0) {
+                        double point_c = /*(int)*/ (length_b / deltaLength - j/2);
+                        density_step = (density0 - density1) / point_c;
                     }
-                    if (x > length_b) {
-                        points.get(i).get(j).density = density1;
-                    }
-
+                    points.get(i).get(j).density = points.get(i).get(j - 1).density - density_step;
+                    points.get(i).get(j).velocity *= 0.6;
+                    points.get(i).get(j).pressure = calc.calcPressure(prevPoint.pressure, points.get(i).get(j).velocity, diameter, deltaLength);
+                    points.get(i).get(j).temperature = calc.calcTemp(prevPoint.temperature, deltaLength, diameter, points.get(i).get(j).velocity);
+                    points.get(i).get(j).flow = calc.calcFlow(points.get(i).get(j).velocity, points.get(i).get(j).density);
 
                 }
+                if (x > length_b) {
+                    points.get(i).get(j).density = density1;
+                }
+
 
             }
+
         }
     }
 
 }
-
-
-
 
