@@ -37,6 +37,7 @@ javafx {
 dependencies {
   implementation 'org.controlsfx:controlsfx:11.1.2'
   implementation files('src/main/resources/style/styles.css')
+  implementation files('src/main/resources/style/chart.css')
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
