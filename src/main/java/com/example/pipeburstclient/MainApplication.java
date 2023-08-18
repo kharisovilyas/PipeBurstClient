@@ -73,81 +73,92 @@ public class MainApplication extends Application {
         NumberAxis x = new NumberAxis();
         NumberAxis y = new NumberAxis();
         VBox vBox = new VBox();
-        ScatterChart<Number, Number> numberScatterChart = new ScatterChart<Number, Number>(x, y);
+        ScatterChart<Number, Number> DensityScatterChart = new ScatterChart<Number, Number>(x, y);
+        ScatterChart<Number, Number> VelocityScatterChart = new ScatterChart<Number, Number>(x, y);
+        ScatterChart<Number, Number> PressureScatterChart = new ScatterChart<Number, Number>(x, y);
+        ScatterChart<Number, Number> TemperatureScatterChart = new ScatterChart<Number, Number>(x, y);
+
+
         Active_computing active_computing = new Active_computing();
         Pane newPane = new Pane();
 
         //LineChart<Number, Number> numberLineChart = new LineChart<Number,Number>(x, y);
-        numberScatterChart.setTitle("Series");
+        DensityScatterChart.setTitle("Series");
 
         XYChart.Series<Number, Number> series1 = new XYChart.Series();
         XYChart.Series<Number, Number> series2 = new XYChart.Series();
         //XYChart.Series series3 = new XYChart.Series();
 
-        vBox.getChildren().addAll(numberScatterChart, active_computing.getGrid_computing());
+        vBox.getChildren().addAll(DensityScatterChart, VelocityScatterChart, PressureScatterChart, TemperatureScatterChart);
 
         Scene scene = new Scene(vBox, 600, 600);
 
         series1.setName("Флюид");
         series2.setName("Стенка Трубопровода");
 
-        ObservableList<XYChart.Data> datas = FXCollections.observableArrayList();
-        ObservableList<XYChart.Data> datas2 = FXCollections.observableArrayList();
-        //ObservableList<XYChart.Data> datas3 = FXCollections.observableArrayList();
 
         double d = pipe.getDiameter();
         double l = pipe.getLength();
-        double verticalQuantity = pipe.getVerticalQuantity() + 1;
+        double verticalQuantity = pipe.getVerticalQuantity();
         double horizontalQuantity = pipe.getHorizontalQuantity();
         double dd = d / verticalQuantity;
         double dl = l / horizontalQuantity;
-        for (int i = 0; i <= verticalQuantity; i++) {
+        for (int i = 1; i < verticalQuantity; i++) {
             for (int j = 0; j < horizontalQuantity; j++) {
                 XYChart.Data symbol = new XYChart.Data(j * dl, i * dd);
-
-                if (i == 0 || i == verticalQuantity) {
-                    //pipe.getPoints().get(i).get(j).density
-                    series2.getData().add(new XYChart.Data<>(j * dl, i * dd));
-                    // series2.setNode(new CustomDataNode(getColorBasedOnValue(pipe.getPoints().get(i).get(j).density)));
-                } else {
-                    series1.getData().add(new XYChart.Data<>(j * dl, i * dd));
-                }
+                series1.getData().add(new XYChart.Data<>(j * dl, i * dd));
             }
 
         }
 
-        for (int i = 0; i <= verticalQuantity; i++) {
-            for (int j = 0; j < horizontalQuantity; j++) {
 
-            }
+        for (int k = 0; k < horizontalQuantity; k++) {
+            series2.getData().add(new XYChart.Data<>(k * dl, 0));
+            series2.getData().add(new XYChart.Data<>(k * dl,verticalQuantity*dd ));
         }
+        pipe.Properties_with_Burst(750);
 
         for (XYChart.Data<Number, Number> dataPoint : series1.getData()) {
             double xValue = dataPoint.getXValue().doubleValue();
             double yValue = dataPoint.getYValue().doubleValue();
-            pipe.Properties_with_Burst(75);
             double density1 = pipe.getPoints().get((int) ((int) yValue / dd)).get((int) ((int) xValue / dl)).density;
+            double velocity1 = pipe.getPoints().get((int) ((int) yValue / dd)).get((int) ((int) xValue / dl)).velocity;
+            double pressure1 = pipe.getPoints().get((int) ((int) yValue / dd)).get((int) ((int) xValue / dl)).pressure;
+            double temperature1 = pipe.getPoints().get((int) ((int) yValue / dd)).get((int) ((int) xValue / dl)).temperature;
+            Color pointColor_density = getColorBasedOnValue(density1, 1000); // Change this based on your criteria
+            Color pointColor_velocity = getColorBasedOnValue(velocity1, 1.5); // Change this based on your criteria
+            Color pointColor_pressure = getColorBasedOnValue(pressure1, 500000); // Change this based on your criteria
+            Color pointColor_temperature = getColorBasedOnValue(temperature1, 90); // Change this based on your criteria
 
-            Color pointColor = getColorBasedOnValue(density1, 1000); // Change this based on your criteria
-            dataPoint.setNode(new CustomDataNode(pointColor));
+            dataPoint.setNode(new CustomDataNode(pointColor_density));
+            dataPoint.setNode(new CustomDataNode(pointColor_velocity));
+            dataPoint.setNode(new CustomDataNode(pointColor_pressure));
+            dataPoint.setNode(new CustomDataNode(pointColor_temperature));
 
 
         }
 
         //series3.setData(datas3);
 
-        //vBox.getChildren().add(numberScatterChart);
+        //vBox.getChildren().add(DensityScatterChart);
 
 
-        numberScatterChart.getData().add(series1);
-        numberScatterChart.getData().add(series2);
-        //numberScatterChart.getData().add(series3);
-        //System.out.println(numberScatterChart.getData().get(0).getData());
+        DensityScatterChart.getData().add(series1);
+        DensityScatterChart.getData().add(series2);
+        VelocityScatterChart.getData().add(series1);
+        VelocityScatterChart.getData().add(series2);
+        PressureScatterChart.getData().add(series1);
+        PressureScatterChart.getData().add(series2);
+        TemperatureScatterChart.getData().add(series1);
+        TemperatureScatterChart.getData().add(series2);
+        //DensityScatterChart.getData().add(series3);
+        //System.out.println(DensityScatterChart.getData().get(0).getData());
         //ScrollPane scrollPane = new ScrollPane(numberLineChart);
-        for (XYChart.Series<Number, Number> s : numberScatterChart.getData()) {
+        for (XYChart.Series<Number, Number> s : DensityScatterChart.getData()) {
             for (XYChart.Data<Number, Number> d1 : s.getData()) {
                 Tooltip.install(d1.getNode(), new Tooltip(
-                        d1.getXValue().toString() + "\n" +
+                        //pipe.getPoints().get((int) ((int) d1.getYValue().doubleValue() / dd)).get((int) ((int) d1.getYValue().doubleValue() / dl)).density+
+                                 "\n" +
                                 "Number Of Events : " + d1.getYValue().toString()));
 
                 //Adding class on hover
@@ -160,9 +171,7 @@ public class MainApplication extends Application {
 
 
         primaryStage.setScene(scene);
-
         primaryStage.show();
-
 
     }
 
@@ -170,25 +179,25 @@ public class MainApplication extends Application {
         // Implement your logic to determine color based on the value
         // For example, you can use gradients, thresholds, or custom mappings
         // Here, we'll simply use a gradient from blue to red based on value
-        if (currentDensity>=0.9*startDensity) {
+        if (currentDensity >= 0.9 * startDensity) {
             return Color.rgb(251, 63, 65);
-        } else if (currentDensity>=0.86*startDensity && currentDensity < 0.9*startDensity) {
+        } else if (currentDensity >= 0.86 * startDensity && currentDensity < 0.9 * startDensity) {
             return Color.rgb(227, 110, 57);
-        } else if (currentDensity>=0.82*startDensity && currentDensity < 0.86*startDensity) {
+        } else if (currentDensity >= 0.82 * startDensity && currentDensity < 0.86 * startDensity) {
             return Color.rgb(250, 183, 74);
-        }else if (currentDensity>=0.78*startDensity && currentDensity < 0.82*startDensity) {
+        } else if (currentDensity >= 0.78 * startDensity && currentDensity < 0.82 * startDensity) {
             return Color.rgb(227, 199, 57);
-        }else if (currentDensity>=0.74*startDensity && currentDensity < 0.78*startDensity) {
+        } else if (currentDensity >= 0.74 * startDensity && currentDensity < 0.78 * startDensity) {
             return Color.rgb(217, 255, 61);
-        } else if (currentDensity>=0.7*startDensity && currentDensity < 0.74*startDensity) {
+        } else if (currentDensity >= 0.7 * startDensity && currentDensity < 0.74 * startDensity) {
             return Color.rgb(75, 227, 64);
-        }else if (currentDensity>=0.66*startDensity && currentDensity < 0.7*startDensity) {
+        } else if (currentDensity >= 0.66 * startDensity && currentDensity < 0.7 * startDensity) {
             return Color.rgb(82, 250, 175);
-        }else if (currentDensity>=0.62*startDensity && currentDensity < 0.66*startDensity) {
+        } else if (currentDensity >= 0.62 * startDensity && currentDensity < 0.66 * startDensity) {
             return Color.rgb(64, 203, 227);
-        }else if (currentDensity>=0.58*startDensity && currentDensity < 0.62*startDensity) {
-            return Color.rgb(78, 129, 252);}
-        else {
+        } else if (currentDensity >= 0.58 * startDensity && currentDensity < 0.62 * startDensity) {
+            return Color.rgb(78, 129, 252);
+        } else {
             return Color.rgb(0, 0, 255);
         }
     }

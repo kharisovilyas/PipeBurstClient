@@ -1,0 +1,14 @@
+.red-border {
+    -fx-border-color: red;
+    -fx-border-width: 2px;
+}
+
+.point-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-padding: 10px;
+}
+.onHover{
+    -fx-background-color: ORANGE;
+}

@@ -118,10 +118,10 @@ public class Pipe {
                 Point prevPoint = points.get(i).get(j - 1);
                 //double density0 = 10;
 
-                if ((x < -1 * Math.pow(y-diameter, 2) + length_b)) {
-                    //установить поинту начальную плотность
+                //установить поинту начальную плотность
+                if ((x < -1 * Math.sqrt(1/diameter) *Math.pow(y-diameter, 2) + length_b))
                     points.get(i).get(j).density = density0;
-                } else {
+                else {
                     if (points.get(i).get(j - 1).density == density0) {
                         double point_c = /*(int)*/ (length_b / deltaLength - j*0.9);
                         density_step = (density0 - density1) / point_c;

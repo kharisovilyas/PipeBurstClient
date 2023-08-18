@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+<StackPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.pipeburstclient.MainController">
+
+    <VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20"/>
+        </padding>
+
+        <Label fx:id="messageInput"/>
+        <CustomTextField fx:id="lengthField" promptText="Length"/>
+        <CustomTextField fx:id="diameterField" promptText="Diameter"/>
+        <CustomTextField fx:id="horizontalQuantityField" promptText="Horizontal Quantity"/>
+        <CustomTextField fx:id="verticalQuantityField" promptText="Vertical Quantity"/>
+
+        <Button text="Создать Pipe" fx:id="startInputPoints"/>
+        <!--<ListView fx:id="listView" visible="false"/>-->
+
+    </VBox>
+</StackPane>
