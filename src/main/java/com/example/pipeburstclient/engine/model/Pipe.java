@@ -118,12 +118,12 @@ public class Pipe {
                 Point prevPoint = points.get(i).get(j - 1);
                 //double density0 = 10;
 
-                if ((x < -0.5 * Math.pow(y - diameter, 2) + length_b)) {
+                if ((x < -1 * Math.pow(y-diameter, 2) + length_b)) {
                     //установить поинту начальную плотность
                     points.get(i).get(j).density = density0;
                 } else {
                     if (points.get(i).get(j - 1).density == density0) {
-                        double point_c = /*(int)*/ (length_b / deltaLength - j/2);
+                        double point_c = /*(int)*/ (length_b / deltaLength - j*0.9);
                         density_step = (density0 - density1) / point_c;
                     }
                     points.get(i).get(j).density = points.get(i).get(j - 1).density - density_step;
