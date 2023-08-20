@@ -15,7 +15,7 @@ public class Calculation {
     }
 
     public double calcTemp(double startTemp, double deltaLength, double diameter, double velocity) {
-        return 20 + (startTemp - 20) * Math.exp(-1 * (CONST_1 * deltaLength) / (CONST_2 * CONST_3 * Math.PI * (diameter / 4) * CONST_4) * velocity);
+        return 20 + (startTemp - 20) * Math.exp(-1 * (CONST_1 * deltaLength) / (CONST_2 * CONST_3 * Math.PI * (diameter / 4) * CONST_4) * velocity)+generateRandomComponent(startTemp);
     }
 
     public double generateRandomComponent(double realComponent) {
@@ -27,11 +27,11 @@ public class Calculation {
     public double calcVelocity(double velocityStartPoint, double diameter, double y, double deltaDiameter) {
         double semiDiam = diameter / 2;
         double centring = semiDiam >= y ? semiDiam - y : y - semiDiam;
-        return velocityStartPoint * (1 - CONST_6 * Math.pow(Math.abs(centring), 2) / Math.pow(diameter, 2)) + generateRandomComponent(velocityStartPoint);
+        return velocityStartPoint * (1 - CONST_6 * Math.pow(Math.abs(centring), 2) / Math.pow(diameter, 2)) + generateRandomComponent(velocityStartPoint)*5;
     }
 
     public double calcPressure(double startPressure, double startVelocity, double diameter, double deltaLength) {
-        return startPressure + (CONST_5 * CONST_4 * Math.pow(startVelocity, 2) * deltaLength) / (2 * diameter);
+        return startPressure - (CONST_5 * CONST_4 * Math.pow(startVelocity, 2) * deltaLength) / (2 * diameter);
     }
 
     public boolean isBorderPoint(int row, int length) {
