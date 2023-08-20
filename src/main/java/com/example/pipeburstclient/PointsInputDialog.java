@@ -1,13 +1,11 @@
 package com.example.pipeburstclient;
 
-import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
-public class Active_computing extends Pane {
+public class PointsInputDialog extends Pane {
     private TextField lengthField_computing;
     private TextField diameterField_computing;
     private TextField horizontalQuantityField_computing;
@@ -22,7 +20,7 @@ public class Active_computing extends Pane {
     private GridPane grid_computing;
 
 
-    public Active_computing() {
+    public PointsInputDialog() {
         //ButtonType confirmButton_computing = new ButtonType("Confirm");
 
         grid_computing = new GridPane();
@@ -61,43 +59,43 @@ public class Active_computing extends Pane {
     }
 
 
-    public TextField getLengthField_computing() {
+    public TextField getLengthFieldComputing() {
         return lengthField_computing;
     }
 
-    public TextField getDiameterField_computing() {
+    public TextField getDiameterFieldComputing() {
         return diameterField_computing;
     }
 
-    public TextField getHorizontalQuantityField_computing() {
+    public TextField getHorizontalQuantityFieldComputing() {
         return horizontalQuantityField_computing;
     }
 
-    public TextField getVerticalQuantityField_computing() {
+    public TextField getVerticalQuantityFieldComputing() {
         return verticalQuantityField_computing;
     }
 
-    public TextField getDensity_computing() {
+    public TextField getDensityComputing() {
         return density_computing;
     }
 
-    public TextField getPressure_computing() {
+    public TextField getPressureComputing() {
         return pressure_computing;
     }
 
-    public TextField getVelocity_computing() {
+    public TextField getVelocityComputing() {
         return velocity_computing;
     }
 
-    public TextField getFlow_computing() {
+    public TextField getFlowComputing() {
         return flow_computing;
     }
 
-    public TextField getTemperature_computing() {
+    public TextField getTemperatureComputing() {
         return temperature_computing;
     }
 
-    public GridPane getGrid_computing() {
+    public GridPane getGridComputing() {
         return grid_computing;
     }
 

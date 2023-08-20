@@ -1,20 +1,20 @@
 package com.example.pipeburstclient;
 
 
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
-public class ParameterInputDialog extends Dialog<ButtonType> {
+public class PipeInputDialog extends Dialog<ButtonType> {
 
     private TextField lengthField;
     private TextField diameterField;
     private TextField horizontalQuantityField;
     private TextField verticalQuantityField;
 
-    public ParameterInputDialog() {
+    private RadioButton waterRadioButton = new RadioButton("Water");
+    private RadioButton oilRadioButton = new RadioButton("Oil");
+    private ToggleGroup fluidToggleGroup = new ToggleGroup();
+    public PipeInputDialog() {
         setTitle("Enter Parameters");
         setHeaderText("Enter parameters for visualization:");
 
@@ -30,14 +30,26 @@ public class ParameterInputDialog extends Dialog<ButtonType> {
         horizontalQuantityField = new TextField();
         verticalQuantityField = new TextField();
 
-        grid.add(new Label("Length:"), 0, 0);
+        grid.add(new Label("Pipes Length:"), 0, 0);
         grid.add(lengthField, 1, 0);
-        grid.add(new Label("Diameter:"), 0, 1);
+        grid.add(new Label("Pipes Diameter:"), 0, 1);
         grid.add(diameterField, 1, 1);
-        grid.add(new Label("Horizontal Quantity:"), 0, 2);
+        grid.add(new Label("Horizontal Quantity of points:"), 0, 2);
         grid.add(horizontalQuantityField, 1, 2);
-        grid.add(new Label("Vertical Quantity:"), 0, 3);
+        grid.add(new Label("Vertical Quantity of points:"), 0, 3);
         grid.add(verticalQuantityField, 1, 3);
+        // Создайте флюиды
+
+
+
+        // Добавьте флюиды в группу
+        waterRadioButton.setToggleGroup(fluidToggleGroup);
+        oilRadioButton.setToggleGroup(fluidToggleGroup);
+
+        // Add RadioButtons to the GridPane
+        grid.add(new Label("Choice of fluid:"), 0, 4);
+        grid.add(waterRadioButton, 1, 4);
+        grid.add(oilRadioButton, 1, 5);
 
         getDialogPane().setContent(grid);
 

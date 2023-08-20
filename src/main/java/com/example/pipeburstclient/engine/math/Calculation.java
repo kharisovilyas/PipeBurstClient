@@ -37,5 +37,8 @@ public class Calculation {
     public boolean isBorderPoint(int row, int length) {
         return row == 0 || row == length;
     }
+    public double calcAnyDelta(double startValue, double endValue){
+        return Math.abs(startValue - endValue);
+    }
 
 }
